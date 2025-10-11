@@ -20,6 +20,16 @@ const initializeWebSocket = (socketIO) => {
             socket.userId = decoded.userId;
             socket.username = decoded.username;
 
+            // Verify user still exists in database
+            const [users] = await db.query(
+                'SELECT id FROM users WHERE id = ?',
+                [socket.userId]
+            );
+
+            if (users.length === 0) {
+                return next(new Error('User not found'));
+            }
+
             next();
         } catch (error) {
             next(new Error('Invalid token'));
