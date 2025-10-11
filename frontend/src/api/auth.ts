@@ -40,6 +40,13 @@ export const authApi = {
     return apiClient.patch<{ user: any }>("/auth/profile", data);
   },
 
+  async updateStatus(status: string) {
+    return apiClient.patch<{ message: string; status: string }>(
+      "/auth/status",
+      { status }
+    );
+  },
+
   async logout() {
     await AsyncStorage.removeItem("auth_token");
   },

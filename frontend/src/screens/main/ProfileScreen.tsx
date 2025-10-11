@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { useChannels } from "../../hooks/useChannels";
+import { useSubscriptions } from "../../hooks/useSubscriptions";
 import { colors, spacing, typography } from "../../theme";
 import { Avatar } from "../../components/common/Avatar";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,6 +21,11 @@ export const ProfileScreen = ({ navigation }: any) => {
     isLoading: channelsLoading,
     loadMyChannels,
   } = useChannels();
+  const {
+    subscriptions,
+    isLoading: subscriptionsLoading,
+    updateNotificationLevel,
+  } = useSubscriptions();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -30,6 +36,10 @@ export const ProfileScreen = ({ navigation }: any) => {
   const handleLogout = async () => {
     await logout();
     navigation.navigate("Login");
+  };
+
+  const handleSearchUsers = () => {
+    navigation.navigate("UserSearch");
   };
 
   const handleRefresh = async () => {
@@ -71,6 +81,12 @@ export const ProfileScreen = ({ navigation }: any) => {
           <Text style={styles.username}>@{user?.username}</Text>
           {user?.bio && <Text style={styles.bio}>{user?.bio}</Text>}
         </View>
+        <TouchableOpacity
+          style={styles.searchButton}
+          onPress={handleSearchUsers}
+        >
+          <Ionicons name="search" size={24} color={colors.primary} />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.stats}>
@@ -90,30 +106,144 @@ export const ProfileScreen = ({ navigation }: any) => {
           <Text style={styles.loadingText}>Loading channels...</Text>
         ) : myChannels.length > 0 ? (
           myChannels.map((channel: any) => (
-            <TouchableOpacity
-              key={channel.id}
-              style={styles.channelItem}
-              onPress={() =>
-                navigation.navigate("Channel", { channelId: channel.id })
-              }
-            >
-              <View style={styles.channelHeader}>
-                <Avatar name={channel.channel_name} size={40} />
-                <View style={styles.channelInfo}>
-                  <Text style={styles.channelName}>{channel.channel_name}</Text>
-                  <Text style={styles.channelHandle}>
-                    @{channel.channel_handle}
-                  </Text>
+            <View key={channel.id} style={styles.channelItem}>
+              <TouchableOpacity
+                style={styles.channelContent}
+                onPress={() =>
+                  navigation.navigate("Channel", { channelId: channel.id })
+                }
+              >
+                <View style={styles.channelHeader}>
+                  <Avatar name={channel.channel_name} size={40} />
+                  <View style={styles.channelInfo}>
+                    <Text style={styles.channelName}>
+                      {channel.channel_name}
+                    </Text>
+                    <Text style={styles.channelHandle}>
+                      @{channel.channel_handle}
+                    </Text>
+                  </View>
                 </View>
+                <Text style={styles.channelStats}>
+                  {channel.subscriber_count} subscribers • {channel.post_count}{" "}
+                  posts
+                </Text>
+              </TouchableOpacity>
+              <View style={styles.channelActions}>
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={() =>
+                    navigation.navigate("EditChannel", {
+                      channelId: channel.id,
+                    })
+                  }
+                >
+                  <Ionicons name="pencil" size={20} color={colors.primary} />
+                </TouchableOpacity>
               </View>
-              <Text style={styles.channelStats}>
-                {channel.subscriber_count} subscribers • {channel.post_count}{" "}
-                posts
-              </Text>
-            </TouchableOpacity>
+            </View>
           ))
         ) : (
           <Text style={styles.emptyText}>No channels yet</Text>
+        )}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Subscriptions</Text>
+        {subscriptionsLoading ? (
+          <Text style={styles.loadingText}>Loading subscriptions...</Text>
+        ) : subscriptions.length > 0 ? (
+          subscriptions.map((subscription: any) => (
+            <View key={subscription.id} style={styles.subscriptionItem}>
+              <TouchableOpacity
+                style={styles.subscriptionContent}
+                onPress={() =>
+                  navigation.navigate("Channel", { channelId: subscription.id })
+                }
+              >
+                <View style={styles.subscriptionHeader}>
+                  <Avatar name={subscription.channel_name} size={40} />
+                  <View style={styles.subscriptionInfo}>
+                    <Text style={styles.channelName}>
+                      {subscription.channel_name}
+                    </Text>
+                    <Text style={styles.channelHandle}>
+                      @{subscription.channel_handle}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={styles.subscriptionStats}>
+                  {subscription.subscriber_count} subscribers •{" "}
+                  {subscription.post_count} posts
+                </Text>
+              </TouchableOpacity>
+              <View style={styles.notificationSettings}>
+                <Text style={styles.notificationLabel}>Notifications:</Text>
+                <TouchableOpacity
+                  style={[
+                    styles.notificationButton,
+                    subscription.notification_level === "all" &&
+                      styles.notificationButtonActive,
+                  ]}
+                  onPress={() =>
+                    updateNotificationLevel(subscription.id, "all")
+                  }
+                >
+                  <Text
+                    style={[
+                      styles.notificationText,
+                      subscription.notification_level === "all" &&
+                        styles.notificationTextActive,
+                    ]}
+                  >
+                    All
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.notificationButton,
+                    subscription.notification_level === "important" &&
+                      styles.notificationButtonActive,
+                  ]}
+                  onPress={() =>
+                    updateNotificationLevel(subscription.id, "important")
+                  }
+                >
+                  <Text
+                    style={[
+                      styles.notificationText,
+                      subscription.notification_level === "important" &&
+                        styles.notificationTextActive,
+                    ]}
+                  >
+                    Important
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.notificationButton,
+                    subscription.notification_level === "none" &&
+                      styles.notificationButtonActive,
+                  ]}
+                  onPress={() =>
+                    updateNotificationLevel(subscription.id, "none")
+                  }
+                >
+                  <Text
+                    style={[
+                      styles.notificationText,
+                      subscription.notification_level === "none" &&
+                        styles.notificationTextActive,
+                    ]}
+                  >
+                    None
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        ) : (
+          <Text style={styles.emptyText}>No subscriptions yet</Text>
         )}
       </View>
 
@@ -174,6 +304,12 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     textAlign: "center",
   },
+  searchButton: {
+    position: "absolute",
+    top: spacing.lg,
+    right: spacing.lg,
+    padding: spacing.sm,
+  },
   stats: {
     flexDirection: "row",
     backgroundColor: colors.surface,
@@ -213,6 +349,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  channelContent: {
+    flex: 1,
+  },
   channelHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -233,6 +372,69 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textSecondary,
     marginTop: spacing.xs,
+  },
+  channelActions: {
+    position: "absolute",
+    top: spacing.md,
+    right: spacing.md,
+    flexDirection: "row",
+  },
+  actionButton: {
+    padding: spacing.xs,
+    marginLeft: spacing.sm,
+  },
+  subscriptionItem: {
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: 8,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  subscriptionContent: {
+    flex: 1,
+  },
+  subscriptionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  subscriptionInfo: {
+    flex: 1,
+    marginLeft: spacing.md,
+  },
+  subscriptionStats: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
+  notificationSettings: {
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  notificationLabel: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  notificationButton: {
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 16,
+    marginRight: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  notificationButtonActive: {
+    backgroundColor: colors.primary,
+  },
+  notificationText: {
+    ...typography.small,
+    color: colors.textSecondary,
+  },
+  notificationTextActive: {
+    color: colors.surface,
   },
   emptyText: {
     ...typography.body,

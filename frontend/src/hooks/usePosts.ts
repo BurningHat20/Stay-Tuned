@@ -6,25 +6,33 @@ export const usePosts = (channelId?: number) => {
   const [posts, setPosts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { socket } = useSocket();
+  const { socket, joinChannel, leaveChannel, onNewPost, offNewPost } =
+    useSocket();
 
   useEffect(() => {
     loadPosts();
   }, [channelId]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (channelId) {
+      joinChannel(channelId);
+    }
 
-    socket.on("new_post", (data: any) => {
+    const handleNewPost = (data: any) => {
       if (!channelId || data.channelId === channelId) {
         setPosts((prev) => [data.post, ...prev]);
       }
-    });
+    };
+
+    onNewPost(handleNewPost);
 
     return () => {
-      socket.off("new_post");
+      if (channelId) {
+        leaveChannel(channelId);
+      }
+      offNewPost();
     };
-  }, [socket, channelId]);
+  }, [channelId, joinChannel, leaveChannel, onNewPost, offNewPost]);
 
   const loadPosts = async () => {
     setIsLoading(true);
@@ -41,11 +49,15 @@ export const usePosts = (channelId?: number) => {
     }
   };
 
-  const createPost = async (content: string, postChannelId: number) => {
+  const createPost = async (
+    content: string,
+    postChannelId: number,
+    postType: "text" | "voice" | "image" | "location" | "status" = "text"
+  ) => {
     await postsApi.create({
       channelId: postChannelId,
       content,
-      postType: "text",
+      postType,
     });
   };
 
@@ -79,6 +91,11 @@ export const usePosts = (channelId?: number) => {
     );
   };
 
+  const deletePost = async (postId: number) => {
+    await postsApi.delete(postId);
+    setPosts((prev) => prev.filter((post) => post.id !== postId));
+  };
+
   return {
     posts,
     isLoading,
@@ -87,5 +104,6 @@ export const usePosts = (channelId?: number) => {
     createPost,
     reactToPost,
     removeReaction,
+    deletePost,
   };
 };

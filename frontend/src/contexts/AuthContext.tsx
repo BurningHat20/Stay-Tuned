@@ -10,6 +10,7 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  updateStatus: (status: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -58,6 +59,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(user);
   };
 
+  const updateStatus = async (status: string) => {
+    await authApi.updateStatus(status);
+    setUser((prev: any) => (prev ? { ...prev, status } : null));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -68,6 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         register,
         logout,
         refreshProfile,
+        updateStatus,
       }}
     >
       {children}

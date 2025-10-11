@@ -31,11 +31,29 @@ export const useSubscriptions = () => {
     setSubscriptions((prev) => prev.filter((sub) => sub.id !== channelId));
   };
 
+  const updateNotificationLevel = async (
+    channelId: number,
+    notificationLevel: string
+  ) => {
+    await subscriptionsApi.updateNotificationLevel(
+      channelId,
+      notificationLevel
+    );
+    setSubscriptions((prev) =>
+      prev.map((sub) =>
+        sub.id === channelId
+          ? { ...sub, notification_level: notificationLevel }
+          : sub
+      )
+    );
+  };
+
   return {
     subscriptions,
     isLoading,
     loadSubscriptions,
     subscribe,
     unsubscribe,
+    updateNotificationLevel,
   };
 };

@@ -4,6 +4,7 @@ import { usePosts } from "../../hooks/usePosts";
 import { PostCard } from "../../components/post/PostCard";
 import { colors, spacing, typography } from "../../theme";
 import { FlatList } from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface ChannelScreenProps {
   route: any;
@@ -15,8 +16,15 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   navigation,
 }) => {
   const { channelId } = route.params;
-  const { posts, isLoading, loadPosts, reactToPost, removeReaction } =
-    usePosts(channelId);
+  const {
+    posts,
+    isLoading,
+    loadPosts,
+    reactToPost,
+    removeReaction,
+    deletePost,
+  } = usePosts(channelId);
+  const { user } = useAuth();
 
   React.useEffect(() => {
     loadPosts();
@@ -32,6 +40,8 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
             post={item}
             onReact={reactToPost}
             onRemoveReaction={removeReaction}
+            onDelete={deletePost}
+            currentUserId={user?.id}
           />
         )}
         refreshing={isLoading}

@@ -15,12 +15,20 @@ import { colors, spacing, typography } from "../../theme";
 import { Ionicons } from "@expo/vector-icons";
 
 export const DiscoverScreen = ({ navigation }: any) => {
-  const { discoverChannels, isDiscoverLoading, loadDiscoverChannels } =
-    useChannels();
+  const {
+    discoverChannels,
+    trendingChannels,
+    isDiscoverLoading,
+    isTrendingLoading,
+    loadDiscoverChannels,
+    loadTrendingChannels,
+  } = useChannels();
   const [searchQuery, setSearchQuery] = useState("");
+  const [showTrending, setShowTrending] = useState(true);
 
   useEffect(() => {
     loadDiscoverChannels();
+    loadTrendingChannels();
   }, []);
 
   const handleSearch = () => {
@@ -50,6 +58,36 @@ export const DiscoverScreen = ({ navigation }: any) => {
         <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
           <Ionicons name="search" size={20} color={colors.primary} />
         </TouchableOpacity>
+      </View>
+
+      {showTrending && trendingChannels.length > 0 && (
+        <View style={styles.trendingSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Trending</Text>
+            <TouchableOpacity onPress={() => setShowTrending(false)}>
+              <Ionicons name="close" size={20} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={trendingChannels}
+            keyExtractor={(item) => `trending-${item.id}`}
+            renderItem={({ item }) => (
+              <ChannelCard
+                channel={item}
+                onPress={() => handleChannelPress(item)}
+              />
+            )}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.trendingList}
+          />
+        </View>
+      )}
+
+      <View style={styles.discoverSection}>
+        <Text style={styles.sectionTitle}>
+          {searchQuery ? `Search Results for "${searchQuery}"` : "Discover"}
+        </Text>
       </View>
 
       <FlatList
@@ -126,6 +164,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: spacing.md,
+  },
+  trendingSection: {
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: spacing.md,
+  },
+  sectionTitle: {
+    ...typography.h3,
+    color: colors.textPrimary,
+  },
+  trendingList: {
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.md,
+  },
+  discoverSection: {
+    padding: spacing.md,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
   list: {
     paddingTop: spacing.md,

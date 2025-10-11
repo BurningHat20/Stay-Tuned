@@ -15,9 +15,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../../contexts/AuthContext";
 
 export const HomeScreen = ({ navigation }: any) => {
-  const { posts, isLoading, error, loadPosts, reactToPost, removeReaction } =
-    usePosts();
-  const { isAuthenticated } = useAuth();
+  const {
+    posts,
+    isLoading,
+    error,
+    loadPosts,
+    reactToPost,
+    removeReaction,
+    deletePost,
+  } = usePosts();
+  const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     navigation.setOptions({
@@ -42,6 +49,8 @@ export const HomeScreen = ({ navigation }: any) => {
             post={item}
             onReact={reactToPost}
             onRemoveReaction={removeReaction}
+            onDelete={deletePost}
+            currentUserId={user?.id}
           />
         )}
         refreshControl={

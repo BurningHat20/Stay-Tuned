@@ -1,20 +1,25 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { colors, typography, spacing } from "../../theme";
 import { Avatar } from "../common/Avatar";
 import { ReactionButton } from "./ReactionButton";
 import { REACTION_TYPES } from "../../config/constants";
+import { Ionicons } from "@expo/vector-icons";
 
 interface PostCardProps {
   post: any;
   onReact: (postId: number, reactionType: string) => void;
   onRemoveReaction: (postId: number) => void;
+  onDelete?: (postId: number) => void;
+  currentUserId?: number;
 }
 
 export const PostCard: React.FC<PostCardProps> = ({
   post,
   onReact,
   onRemoveReaction,
+  onDelete,
+  currentUserId,
 }) => {
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -28,6 +33,19 @@ export const PostCard: React.FC<PostCardProps> = ({
     return `${Math.floor(diffInMins / 1440)}d`;
   };
 
+  const handleDelete = () => {
+    Alert.alert("Delete Post", "Are you sure you want to delete this post?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => onDelete?.(post.id),
+      },
+    ]);
+  };
+
+  const isOwner = currentUserId && post.user_id === currentUserId;
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -38,7 +56,33 @@ export const PostCard: React.FC<PostCardProps> = ({
             <Text style={styles.channelName}>{post.channel_name}</Text>
           )}
         </View>
-        <Text style={styles.time}>{formatTime(post.created_at)}</Text>
+        <View style={styles.headerRight}>
+          {post.post_type && post.post_type !== "text" && (
+            <View style={styles.postTypeIndicator}>
+              <Ionicons
+                name={
+                  post.post_type === "voice"
+                    ? "mic"
+                    : post.post_type === "image"
+                    ? "image"
+                    : post.post_type === "location"
+                    ? "location"
+                    : post.post_type === "status"
+                    ? "happy"
+                    : "text"
+                }
+                size={14}
+                color={colors.primary}
+              />
+            </View>
+          )}
+          <Text style={styles.time}>{formatTime(post.created_at)}</Text>
+          {isOwner && onDelete && (
+            <TouchableOpacity style={styles.menuButton} onPress={handleDelete}>
+              <Ionicons name="trash" size={16} color={colors.error} />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       <Text style={styles.content}>{post.content}</Text>
@@ -91,9 +135,19 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 2,
   },
+  headerRight: {
+    alignItems: "flex-end",
+  },
+  postTypeIndicator: {
+    marginBottom: spacing.xs,
+  },
   time: {
     ...typography.small,
     color: colors.textTertiary,
+  },
+  menuButton: {
+    marginTop: spacing.xs,
+    padding: spacing.xs,
   },
   content: {
     ...typography.body,

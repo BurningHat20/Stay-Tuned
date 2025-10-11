@@ -10,6 +10,8 @@ import { HomeScreen } from "../screens/main/HomeScreen";
 import { DiscoverScreen } from "../screens/main/DiscoverScreen";
 import { ProfileScreen } from "../screens/main/ProfileScreen";
 import { ChannelScreen } from "../screens/main/ChannelScreen";
+import { EditChannelScreen } from "../screens/main/EditChannelScreen";
+import { UserSearchScreen } from "../screens/main/UserSearchScreen";
 import { CreatePostScreen } from "../screens/post/CreatePostScreen";
 import { colors } from "../theme";
 
@@ -71,6 +73,8 @@ export const AppNavigator = () => {
             />
             <Stack.Screen name="CreatePost" component={CreatePostScreen} />
             <Stack.Screen name="Channel" component={ChannelScreen} />
+            <Stack.Screen name="EditChannel" component={EditChannelScreen} />
+            <Stack.Screen name="UserSearch" component={UserSearchScreen} />
           </>
         ) : (
           <>
