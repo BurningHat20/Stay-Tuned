@@ -60,17 +60,17 @@ const Post = ({ post, onPress, onChannelPress, onUserPress, onReaction }) => {
                             }
                         />
                         <View style={styles.nameContainer}>
-                            <Text style={styles.fullName}>{full_name}</Text>
-                            <Text style={styles.username}>@{username}</Text>
+                            <Text style={styles.fullName}>{full_name || 'Unknown User'}</Text>
+                            <Text style={styles.username}>@{username || 'unknown'}</Text>
                         </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={onChannelPress}>
-                        <Text style={styles.channelName}>{channel_name}</Text>
+                        <Text style={styles.channelName}>{channel_name || 'Channel'}</Text>
                     </TouchableOpacity>
                 </View>
 
-                <Text style={styles.content}>{content}</Text>
+                <Text style={styles.content}>{content || ''}</Text>
 
                 {renderMedia()}
 

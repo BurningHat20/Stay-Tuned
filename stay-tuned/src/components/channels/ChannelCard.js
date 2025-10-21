@@ -43,7 +43,7 @@ const ChannelCard = ({
                         {channel_name}
                     </Text>
                     <Text style={styles.compactSubCount}>
-                        {subscriber_count} subscriber{subscriber_count !== 1 ? 's' : ''}
+                        {subscriber_count || 0} subscriber{subscriber_count !== 1 ? 's' : ''}
                     </Text>
                 </View>
                 <SubscribeButton
@@ -84,7 +84,7 @@ const ChannelCard = ({
 
                 <View style={styles.channelInfo}>
                     <View style={styles.channelHeader}>
-                        <Text style={styles.channelName}>{channel_name}</Text>
+                        <Text style={styles.channelName}>{channel_name || 'Unnamed Channel'}</Text>
                         {is_verified && (
                             <View style={styles.verifiedBadge}>
                                 <Text style={styles.verifiedText}>✓</Text>
@@ -92,8 +92,8 @@ const ChannelCard = ({
                         )}
                     </View>
 
-                    <Text style={styles.channelHandle}>@{channel_handle}</Text>
-                    <Text style={styles.creatorName}>by {full_name}</Text>
+                    <Text style={styles.channelHandle}>@{channel_handle || 'channel'}</Text>
+                    <Text style={styles.creatorName}>by {full_name || 'Unknown'}</Text>
 
                     {description && (
                         <Text style={styles.description} numberOfLines={2}>
@@ -102,9 +102,9 @@ const ChannelCard = ({
                     )}
 
                     <View style={styles.stats}>
-                        <Text style={styles.statText}>{subscriber_count} subscriber{subscriber_count !== 1 ? 's' : ''}</Text>
+                        <Text style={styles.statText}>{subscriber_count || 0} subscriber{(subscriber_count || 0) !== 1 ? 's' : ''}</Text>
                         <Text style={styles.statDot}>•</Text>
-                        <Text style={styles.statText}>{post_count} post{post_count !== 1 ? 's' : ''}</Text>
+                        <Text style={styles.statText}>{post_count || 0} post{(post_count || 0) !== 1 ? 's' : ''}</Text>
                     </View>
                 </View>
 

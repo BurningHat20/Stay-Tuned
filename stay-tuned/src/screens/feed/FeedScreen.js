@@ -138,7 +138,7 @@ const FeedScreen = ({ navigation }) => {
                 title="Your feed is empty"
                 description="Subscribe to channels to see posts here"
                 buttonText="Discover Channels"
-                onButtonPress={() => navigation.navigate('Discover')}
+                onButtonPress={() => navigation.navigate('DiscoverTab')}
             />
         );
     };
@@ -183,7 +183,7 @@ const FeedScreen = ({ navigation }) => {
                     <FAB
                         style={styles.fab}
                         icon="plus"
-                        onPress={() => navigation.navigate('CreatePost')}
+                        onPress={() => navigation.navigate('CreatePostTab')}
                     />
                 </>
             )}

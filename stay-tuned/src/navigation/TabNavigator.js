@@ -63,6 +63,11 @@ const FeedStackNavigator = () => {
                     title: route.params?.channelName || 'Channel'
                 })}
             />
+            <FeedStack.Screen
+                name="UserProfile"
+                component={ProfileScreen}
+                options={{ title: 'Profile' }}
+            />
         </FeedStack.Navigator>
     );
 };
@@ -86,6 +91,16 @@ const DiscoverStackNavigator = () => {
                 options={({ route }) => ({
                     title: route.params?.channelName || 'Channel'
                 })}
+            />
+            <DiscoverStack.Screen
+                name="PostDetails"
+                component={PostDetailScreen}
+                options={{ title: 'Post' }}
+            />
+            <DiscoverStack.Screen
+                name="UserProfile"
+                component={ProfileScreen}
+                options={{ title: 'Profile' }}
             />
         </DiscoverStack.Navigator>
     );
@@ -124,6 +139,11 @@ const ProfileStackNavigator = () => {
                 options={{ title: 'Profile', headerShown: false }}
             />
             <ProfileStack.Screen
+                name="UserProfile"
+                component={ProfileScreen}
+                options={{ title: 'Profile' }}
+            />
+            <ProfileStack.Screen
                 name="EditProfile"
                 component={EditProfileScreen}
                 options={{ title: 'Edit Profile' }}
@@ -142,6 +162,13 @@ const ProfileStackNavigator = () => {
                 name="EditChannel"
                 component={EditChannelScreen}
                 options={{ title: 'Edit Channel' }}
+            />
+            <ProfileStack.Screen
+                name="ChannelDetails"
+                component={ChannelDetailScreen}
+                options={({ route }) => ({
+                    title: route.params?.channelName || 'Channel'
+                })}
             />
         </ProfileStack.Navigator>
     );
